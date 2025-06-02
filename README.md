@@ -21,7 +21,7 @@ A demonstration project for generating REST API files in Laravel. This project h
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/dhaval-j-r-7span/laravel-code-generator-demo.git
+    git clone https://github.com/DhavalRajput-j-r-7span/laravel-code-generator-demo.git
     cd laravel-code-generator-demo
     ```
 
@@ -46,11 +46,8 @@ A demonstration project for generating REST API files in Laravel. This project h
     php artisan migrate
     ```
 
-## Usage
-
-To generate API files, use the artisan command:
-
 Clearing Logs
+
 You can clear generated logs either manually or automatically.
 
 🔹 Manually (Artisan)

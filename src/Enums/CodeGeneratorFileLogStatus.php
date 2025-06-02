@@ -1,6 +1,6 @@
 <?php
 
-namespace Dhaval\CodeGenerator\Enums;
+namespace DhavalRajput\CodeGenerator\Enums;
 
 /**
  *

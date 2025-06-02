@@ -1,6 +1,6 @@
 <?php
 
-use Dhaval\CodeGenerator\Http\Middleware\AuthorizeCodeGenerator;
+use DhavalRajput\CodeGenerator\Http\Middleware\AuthorizeCodeGenerator;
 
 return [
     /*
@@ -69,7 +69,7 @@ return [
         AuthorizeCodeGenerator::class, // Custom middleware to authorize generator access
     ],
 
-    'class_namespace' => 'Dhaval\\CodeGenerator',
+    'class_namespace' => 'DhavalRajput\\CodeGenerator',
 
     /*
     |--------------------------------------------------------------------------

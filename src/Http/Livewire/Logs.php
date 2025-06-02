@@ -1,10 +1,10 @@
 <?php
 
-namespace Dhaval\CodeGenerator\Http\Livewire;
+namespace DhavalRajput\CodeGenerator\Http\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Dhaval\CodeGenerator\Models\CodeGeneratorFileLog;
+use DhavalRajput\CodeGenerator\Models\CodeGeneratorFileLog;
 
 class Logs extends Component
 {

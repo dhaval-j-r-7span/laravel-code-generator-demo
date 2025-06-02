@@ -1,15 +1,15 @@
 {
-  "name": "dhaval/code-generator",
+  "name": "dhavalrajput/code-generator",
   "description": "A Laravel package with a web interface to easily create full CRUD APIs — like models, controllers, migrations, services, traits, notifications, policies, and more. Built using Laravel and Livewire.",
 
   "autoload": {
     "psr-4": {
-      "Dhaval\\CodeGenerator\\": "src/"
+      "DhavalRajput\\CodeGenerator\\": "src/"
     }
   },
   "authors": [
     {
-      "name": "dhaval"
+      "name": "dhavalrajput"
     }
   ],
   "require": {
@@ -20,7 +20,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Dhaval\\CodeGenerator\\CodeGeneratorServiceProvider"
+        "DhavalRajput\\CodeGenerator\\CodeGeneratorServiceProvider"
       ]
     }
   }

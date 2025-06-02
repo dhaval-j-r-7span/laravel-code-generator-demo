@@ -1,9 +1,9 @@
 <?php 
 
-namespace Dhaval\CodeGenerator\Console\Commands;
+namespace DhavalRajput\CodeGenerator\Console\Commands;
 
 use Illuminate\Console\Command;
-use Dhaval\CodeGenerator\Models\CodeGeneratorFileLog;
+use DhavalRajput\CodeGenerator\Models\CodeGeneratorFileLog;
 
 class ClearLogs extends Command
 {
