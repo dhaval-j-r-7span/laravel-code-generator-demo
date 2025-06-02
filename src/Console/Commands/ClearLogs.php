@@ -1,10 +1,9 @@
 <?php 
 
-namespace Sevenspan\CodeGenerator\Console\Commands;
+namespace Dhaval\CodeGenerator\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Sevenspan\CodeGenerator\Models\CodeGeneratorFileLog;
+use Dhaval\CodeGenerator\Models\CodeGeneratorFileLog;
 
 class ClearLogs extends Command
 {

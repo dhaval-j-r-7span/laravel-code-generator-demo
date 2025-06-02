@@ -1,13 +1,13 @@
 <?php
 
-namespace Sevenspan\CodeGenerator;
+namespace Dhaval\CodeGenerator;
 
 use Livewire\Livewire;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Sevenspan\CodeGenerator\Http\Livewire\Index;
-use Sevenspan\CodeGenerator\Http\Livewire\Logs;
-use Sevenspan\CodeGenerator\Http\Livewire\RestApi;
+use Dhaval\CodeGenerator\Http\Livewire\Index;
+use Dhaval\CodeGenerator\Http\Livewire\Logs;
+use Dhaval\CodeGenerator\Http\Livewire\RestApi;
 
 class CodeGeneratorServiceProvider extends ServiceProvider
 {
@@ -26,18 +26,18 @@ class CodeGeneratorServiceProvider extends ServiceProvider
 
         // Register package artisan commands
         $this->commands([
-            \Sevenspan\CodeGenerator\Console\Commands\MakeModel::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakeController::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakeMigration::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakePolicy::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakeObserver::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakeFactory::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakeService::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakeNotification::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakeRequest::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakeResource::class,
-            \Sevenspan\CodeGenerator\Console\Commands\MakeResourceCollection::class,
-            \Sevenspan\CodeGenerator\Console\Commands\ClearLogs::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeModel::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeController::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeMigration::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakePolicy::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeObserver::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeFactory::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeService::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeNotification::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeRequest::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeResource::class,
+            \Dhaval\CodeGenerator\Console\Commands\MakeResourceCollection::class,
+            \Dhaval\CodeGenerator\Console\Commands\ClearLogs::class,
         ]);
     }
 

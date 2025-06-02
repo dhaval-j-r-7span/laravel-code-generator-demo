@@ -1,12 +1,12 @@
 <?php
 
-namespace Sevenspan\CodeGenerator\Console\Commands;
+namespace Dhaval\CodeGenerator\Console\Commands;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Sevenspan\CodeGenerator\Traits\FileManager;
-use Sevenspan\CodeGenerator\Enums\CodeGeneratorFileType;
+use Dhaval\CodeGenerator\Traits\FileManager;
+use Dhaval\CodeGenerator\Enums\CodeGeneratorFileType;
 
 
 class MakeResourceCollection extends Command

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sevenspan\CodeGenerator\Http\Middleware;
+namespace Dhaval\CodeGenerator\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
