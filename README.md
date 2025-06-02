@@ -66,12 +66,3 @@ scheduler()
 🔹 Automatically (Laravel 10+)
 
 For Laravel 10 and later, you can schedule the log clearing command in the schedule method of your app/Console/Kernel.php file:
-
-protected function schedule(Schedule $schedule): void
-{
-    $schedule->command('code-generator:clear-logs')->daily(); // Runs daily
-    // Or, weekly:
-    // $schedule->command('code-generator:clear-logs')->weekly();
-    // Or, for monthly:
-    // $schedule->command('code-generator:clear-logs')->monthly();
-}
