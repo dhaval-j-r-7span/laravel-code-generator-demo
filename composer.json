@@ -4,19 +4,23 @@
 
   "autoload": {
     "psr-4": {
-      "Sevenspan\\CodeGenerator\\": "src/"
+      "Dhaval\\CodeGenerator\\": "src/"
     }
   },
   "authors": [
     {
-      "name": "sevenspan"
+      "name": "dhaval"
     }
   ],
-  "require": {},
+  "require": {
+     "php": "^8.0",
+    "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+    "livewire/livewire": "^3.0"
+  },
   "extra": {
     "laravel": {
       "providers": [
-        "Sevenspan\\CodeGenerator\\CodeGeneratorServiceProvider"
+        "Dhaval\\CodeGenerator\\CodeGeneratorServiceProvider"
       ]
     }
   }
