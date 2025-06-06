@@ -1,6 +1,6 @@
 <?php
 
-namespace DhavalRajput\CodeGenerator\Enums;
+namespace Sevenspan\CodeGenerator\Enums;
 
 /**
  * Enum CodeGeneratorFileType

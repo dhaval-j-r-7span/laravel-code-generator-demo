@@ -1,68 +1,113 @@
-# laravel-code-generator-demo
+# Laravel Code Generator
 
-A demonstration project for generating REST API files in Laravel. This project helps automate the scaffolding of controllers, models, migrations, and other API components, streamlining the development of Laravel-based APIs.
+A developer-friendly Laravel package to **generate models, migrations, controllers, requests, resources, factories, policies, observers, services, notifications, and traits** using a modern Livewire-powered UI.
 
-## Features
+This package is designed to **accelerate API development** in Laravel by providing a visual interface for defining models, fields, relationships, and scaffolding complete REST endpoints.
 
-*   Generate RESTful controllers, models, and migrations
-*   Supports automatic route registration
-*   Customizable templates for code generation
-*   Compatible with Laravel best practices
-*   Blade templates included for quick API documentation or views
+---
 
-## Requirements
+## 🚀 Features
 
-*   PHP >= 8.0
-*   Laravel >= 9.x
-*   Composer
+-   **REST API Generator**: Instantly scaffold Models, Controllers, Migrations, Services, Resources, Requests, and more.
+-   **Livewire UI**: Interactive, dynamic interface for rapid development.
+-   **Trait Support**: Easily add reusable traits to your models via the UI.
+-   **Validation & Error Handling**: Smart file handling with overwrite protection.
+-   **Highly Configurable**: Customize paths, namespaces, route prefixes, and stub templates.
+-   **Smart File Placement**: Files are created in Laravel-standard folders.
+-   **Log Viewer**: View package logs directly from the UI for troubleshooting and transparency.
 
-## Installation
+---
 
-1.  **Clone the repository:**
+## 🧩 Requirements
 
-    ```bash
-    git clone https://github.com/DhavalRajput-j-r-7span/laravel-code-generator-demo.git
-    cd laravel-code-generator-demo
-    ```
+-   Laravel 12+
+-   PHP 8.2+
+-   [Livewire 3](https://livewire.laravel.com/)
+-   [spatie/laravel-query-builder](https://github.com/spatie/laravel-query-builder)
 
-2.  **Install dependencies:**
+---
 
-    ```bash
-    composer install
-    ```
+## 📦 Installation
 
-3.  **Configure environment variables:**
-
-    Copy the example environment file and configure your settings:
+1. **Install via Composer:**
 
     ```bash
-    cp .env.example .env
-    php artisan key:generate
+    composer require sevenspan/code-generator
     ```
 
-4.  **Run database migrations (if applicable):**
+2. **Publish the configuration and migrations:**
 
     ```bash
-    php artisan migrate
+    php artisan vendor:publish --tag=code-generator-config
+    php artisan vendor:publish --tag=code-generator-migrations
     ```
 
-Clearing Logs
+3. **(Optional) Customize configuration:**
 
-You can clear generated logs either manually or automatically.
+    Edit `config/code-generator.php` to set route paths, folder locations, and stub templates as needed.
 
-🔹 Manually (Artisan)
+---
 
-php artisan code-generator:clear-logs
-Add env variable in .env file:
+## 🖥️ Usage
 
-CODE_GENERATOR_LOG_RETENTION_DAYS=2
-🔹 Automatically (Laravel 12+)
+1. **Access the UI**
 
-Add this in bootstrap/app.php:
+    Visit:
 
-scheduler()
-    ->command('code-generator:clear-logs')
-    ->daily(); // or weekly/monthly
-🔹 Automatically (Laravel 10+)
+    ```
+    http://yourdomain.com/code-generator
+    ```
 
-For Laravel 10 and later, you can schedule the log clearing command in the schedule method of your app/Console/Kernel.php file:
+2. **Define your model, fields, and relationships**
+
+    - Use the UI to add fields (columns), set data types, validation, and foreign keys.
+    - Add Eloquent relationships visually (hasOne, hasMany, belongsToMany, etc.).
+    - Select which files to generate (model, migration, controller, etc.).
+    - Optionally, select other features like traits, observers, and notifications.
+
+3. **Generate Files**
+
+    - Click "Generate" to scaffold all selected files in your Laravel app.
+
+---
+
+## 📜 Logs
+
+-   The package provides a log viewer in the UI to help you review generation activity and errors.
+-   **To clear the logs**, run the following Artisan command:
+
+    ```bash
+    php artisan code-generator:clear-logs
+    ```
+
+---
+
+## ⚙️ Configuration
+
+The main configuration file is published at `config/code-generator.php`.  
+You can customize:
+
+-   Route path and prefix
+-   Folder paths for generated files
+-   Stub templates for each file type
+
+---
+
+## 🧑‍💻 Contributing
+
+Pull requests and issues are welcome!
+
+-   Fork the repo
+-   Create a new branch: `git checkout -b feature/my-feature`
+-   Commit your changes and push
+-   Open a Pull Request
+
+---
+
+## 📄 License
+
+The MIT License (MIT).
+
+---
+
+**Happy coding! 🚀**

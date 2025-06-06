@@ -2,24 +2,22 @@
 
 namespace Sevenspan\CodeGenerator\Http\Livewire;
 
+
 use Livewire\Component;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
+use Sevenspan\CodeGenerator\Library\Helper;
 
 class RestApi extends Component
 {
     // Data properties
+    public array $relationTypes = [];
     public array $relationData = [];
     public array $fieldsData = [];
     public array $notificationData = [];
-
     public array $tableNames = [];
-
     public array $modelNames = [];
-
     public $fieldNames = [];
     public $columnNames = [];
     public $baseFields = [];
@@ -30,11 +28,12 @@ class RestApi extends Component
     public $errorMessage = "";
     public $successMessage = '';
 
-    public $isForeignKey = false;
-    public $foreignModelName = '';
-    public $referencedColumn = '';
-    public $onDeleteAction = '';
-    public $onUpdateAction = '';
+    // Foreign key properties
+    public $is_foreign_key = false;
+    public $foreign_model_name = '';
+    public $referenced_column = '';
+    public $on_delete_action = '';
+    public $on_update_action = '';
 
     // Modal visibility properties
     public $isAddRelModalOpen = false;
@@ -46,7 +45,7 @@ class RestApi extends Component
     public $isNotificationModalOpen = false;
 
     // Form inputs
-    public $modelName;
+    public $model_name;
 
     public $relations, $relationId, $fields, $fieldId;
 
@@ -60,64 +59,63 @@ class RestApi extends Component
     public $class_name, $data, $subject, $body;
 
     // Method checkboxes
-    public $index = false;
-    public $store = false;
-    public $show = false;
-    public $update = false;
-    public $destroy = false;
+    public $is_index_method_added = false;
+    public $is_store_method_added = false;
+    public $is_show_method_added = false;
+    public $is_update_method_added = false;
+    public $is_destroy_method_added = false;
 
     // File generation options
-    public $modelFile = false;
-    public $migrationFile = false;
-    public $softDeleteFile = false;
-    public $crudFile = false;
-    public $serviceFile = false;
-    public $notificationFile = false;
-    public $resourceFile = false;
-    public $requestFile = false;
-    public $traitFiles = false;
-    public $overwriteFiles = false;
-    public $observerFile = false;
-    public $factoryFile = false;
-    public $policyFile = false;
+    public $is_model_file_added = false;
+    public $is_migration_file_added = false;
+    public $is_soft_delete_added = false;
+    public $is_admin_crud_added = false;
+    public $is_service_file_added = false;
+    public $is_notification_file_added = false;
+    public $is_resource_file_added = false;
+    public $is_request_file_added = false;
+    public $is_trait_files_added = false;
+    public $is_overwrite_files = false;
+    public $is_observer_file_added = false;
+    public $is_factory_file_added = false;
+    public $is_policy_file_added = false;
 
     // Trait checkboxes
-    public $BootModel = false;
-    public $PaginationTrait = false;
-    public $ResourceFilterable = false;
-    public $HasUuid = false;
-    public $HasUserAction = false;
-    public $isGenerating = false;
+    public $is_boot_model_trait_added = false;
+    public $is_pagination_trait_added = false;
+    public $is_resource_filterable_trait_added = false;
+    public $is_has_uuid_trait_added = false;
+    public $is_has_user_action_trait_added = false;
 
     // Validation rules
     protected $rules = [
-        'modelName' => 'required|regex:/^[A-Z][A-Za-z]+$/|max:255',
-        'related_model' => 'required|regex:/^[A-Z][A-Za-z]+$/|max:255',
+        'model_name' => 'required|regex:/^[A-Z][A-Za-z]+$/',
+        'related_model' => 'required|regex:/^[A-Z][A-Za-z]+$/',
         'relation_type' => 'required',
-        'intermediate_model' => 'required|different:modelName|different:related_model|regex:/^[A-Z][A-Za-z]+$/|max:255',
-        'foreign_key' => 'required|string|regex:/^[a-z_]+$/|max:255',
-        'local_key' => 'required|string|regex:/^[a-z_]+$/|max:255',
+        'intermediate_model' => 'required|different:model_name|different:related_model|regex:/^[A-Z][A-Za-z]+$/',
+        'foreign_key' => 'required|string|regex:/^[a-z]+(_[a-z]+)*$/',
+        'local_key' => 'required|string|regex:/^[a-z]+(_[a-z]+)*$/',
 
-        'intermediate_foreign_key' => 'required|string|regex:/^[a-z_]+$/|max:255',
-        'intermediate_local_key' => 'required|string|regex:/^[a-z_]+$/|max:255',
+        'intermediate_foreign_key' => 'required|string|regex:/^[a-z]+(_[a-z]+)*$/',
+        'intermediate_local_key' => 'required|string|regex:/^[a-z]+(_[a-z]+)*$/',
 
         'data_type' => 'required',
-        'column_name' => 'required|regex:/^[a-z_]+$/|max:255',
+        'column_name' => 'required|regex:/^[a-z_]+$/',
         'column_validation' => 'required',
         'class_name' => 'required|regex:/^[A-Z][A-Za-z]+$/',
         'data' => 'required|regex:/^[A-Za-z0-9]+:[A-Za-z0-9]+(?:,[A-Za-z0-9]+:[A-Za-z0-9]+)*$/',
-        'subject' => 'required|regex:/^[A-Za-z ]+$/|max:255',
+        'subject' => 'required|regex:/^[A-Za-z ]+$/',
         'body' => 'required|regex:/^[A-Za-z ]+$/',
-        'foreignModelName' => 'required|regex:/^[a-z0-9_]+$/',
-        'onDeleteAction' => 'nullable|in:restrict,cascade,set null,no action',
-        'onUpdateAction' => 'nullable|in:restrict,cascade,set null,no action',
+        'foreign_model_name' => 'required|regex:/^[a-z0-9_]+$/',
+        'on_delete_action' => 'nullable|in:restrict,cascade,set null,no action',
+        'on_update_action' => 'nullable|in:restrict,cascade,set null,no action',
     ];
 
     // Custom validation messages
     public $messages = [
-        'modelName.regex' => 'The Model Name must start with an uppercase letter and contain only letters.',
+        'model_name.regex' => 'The Model Name must start with an uppercase letter and contain only letters.',
         'related_model.regex' => 'The Model Name must start with an uppercase letter and contain only letters.',
-        'modelName.max' => 'The Model Name must not exceed 255 characters.',
+        'model_name.max' => 'The Model Name must not exceed 255 characters.',
         'related_model.max' => 'The Model Name must not exceed 255 characters.',
     ];
 
@@ -130,18 +128,15 @@ class RestApi extends Component
     // Add updated method for foreign key checkbox
     public function updatedIsForeignKey($value)
     {
-        if (!$value) {
-            // Checkbox was unchecked - clear related fields
-            $this->foreignModelName = '';
-            $this->referencedColumn = '';
+        if ($value) {
+            $this->tableNames = Helper::getTableNamesFromMigrations();
+        } else {
+            $this->foreign_model_name = '';
+            $this->referenced_column = '';
+            $this->on_delete_action = '';
+            $this->on_update_action = '';
+            $this->tableNames = [];
         }
-    }
-
-    // Add mount method to restore state of form
-    public function mount()
-    {
-        $this->loadMigrationTableNames();
-        $this->loadModelNames();
     }
 
     // Live validation for form fields
@@ -151,10 +146,22 @@ class RestApi extends Component
     }
 
 
-    // Update notification file checkbox state and open modal if checked
-    public function updatedNotificationFile(): void
+    // collect the model names when the modal is opened
+    public function updatedIsAddRelModalOpen($value)
     {
-        if ($this->notificationFile) {
+        if ($value) {
+            $this->relationTypes = Helper::getRelationTypes();
+            $this->modelNames = collect(Helper::getTableNamesFromMigrations())
+                ->map(function ($name) {
+                    return Str::studly(Str::singular($name));
+                })->toArray();
+        }
+    }
+
+    // Update notification file checkbox state and open modal if checked
+    public function updatedNotificationFile($value): void
+    {
+        if ($value) {
             $this->isNotificationModalOpen = true;
         }
     }
@@ -164,7 +171,7 @@ class RestApi extends Component
         $this->errorMessage = "";
 
         // Check if any file that requires fields is selected
-        $requiresFields = $this->modelFile || $this->migrationFile || $this->requestFile || $this->factoryFile;
+        $requiresFields = $this->is_model_file_added || $this->is_migration_file_added || $this->is_request_file_added || $this->is_factory_file_added;
 
         // If fields are required but none are added
         if ($requiresFields && empty($this->fieldsData)) {
@@ -173,7 +180,7 @@ class RestApi extends Component
         }
 
         // Check for methods
-        if (!($this->index || $this->store || $this->show || $this->destroy || $this->update)) {
+        if (!($this->is_index_method_added || $this->is_store_method_added || $this->is_show_method_added || $this->is_destroy_method_added || $this->is_update_method_added)) {
             $this->errorMessage = "Please select at least one method.";
             return false;
         }
@@ -226,15 +233,16 @@ class RestApi extends Component
             'foreign_key',
             'local_key',
             'data_type',
-            'isForeignKey',
             'column_name',
             'column_validation',
             'fieldId',
-            'isForeignKey',
-            'foreignModelName',
-            'referencedColumn',
+            'is_foreign_key',
+            'foreign_model_name',
+            'referenced_column',
             'intermediate_foreign_key',
-            'intermediate_local_key'
+            'intermediate_local_key',
+            'on_delete_action',
+            'on_update_action',
         ]);
         $this->resetErrorBag();
     }
@@ -249,7 +257,7 @@ class RestApi extends Component
             'local_key' => $this->rules['local_key'],
         ];
 
-        $isThroughRelation = in_array($this->relation_type, ['Has One Through', 'Has Many Through']);
+        $isThroughRelation = in_array($this->relation_type, ['hasOneThrough', 'hasManyThrough']);
 
         // Add intermediate model rules only for through relations
         if ($isThroughRelation) {
@@ -262,7 +270,7 @@ class RestApi extends Component
 
         if (
             $this->foreign_key === $this->local_key &&
-            $this->related_model === $this->modelName
+            $this->related_model === $this->model_name
         ) {
             $this->addError('local_key', 'Foreign key and local key cannot be the same as base model for self-relation.');
             return;
@@ -298,7 +306,6 @@ class RestApi extends Component
                 return;
             }
         }
-
         // Update or add relation
         if ($this->relationId) {
             foreach ($this->relationData as &$relation) {
@@ -311,6 +318,8 @@ class RestApi extends Component
         } else {
             $this->relationData[] = ['id' => Str::random(8)] + $relationData;
         }
+
+
         $this->isAddRelModalOpen = false;
         $this->isRelEditModalOpen = false;
         $this->reset(['related_model', 'relation_type', 'intermediate_model', 'foreign_key', 'local_key', 'intermediate_foreign_key', 'intermediate_local_key']);
@@ -327,9 +336,11 @@ class RestApi extends Component
             $this->column_name = $field['column_name'] ?? '';
             $this->data_type = $field['data_type'] ?? '';
             $this->column_validation = $field['column_validation'] ?? '';
-            $this->isForeignKey = (bool) ($field['isForeignKey'] ?? false);
-            $this->foreignModelName = $field['foreignModelName'] ?? '';
-            $this->referencedColumn = $field['referencedColumn'] ?? '';
+            $this->is_foreign_key = (bool) ($field['is_foreign_key'] ?? false);
+            $this->foreign_model_name = $field['foreign_model_name'] ?? '';
+            $this->referenced_column = $field['referenced_column'] ?? '';
+            $this->on_delete_action = $field['on_delete_action'] ?? '';
+            $this->on_update_action = $field['on_update_action'] ?? '';
         }
 
         $this->isEditFieldModalOpen = true;
@@ -351,22 +362,23 @@ class RestApi extends Component
         $this->isDeleteFieldModalOpen = false;
     }
 
-    // Save Fields Data
-    public function saveField(): void
+    protected function isDuplicateColumn(): bool
     {
-        // Check for duplicate column name, excluding the current edited field by ID
-        $columnExists = false;
         foreach ($this->fieldsData as $field) {
             if (
                 $field['column_name'] === $this->column_name &&
                 (!$this->fieldId || $field['id'] !== $this->fieldId)
             ) {
-                $columnExists = true;
-                break;
+                return true;
             }
         }
-
-        if ($columnExists) {
+        return false;
+    }
+    // Save Fields Data
+    public function saveField(): void
+    {
+        // Check for duplicate column name, excluding the current edited field by ID
+        if ($this->isDuplicateColumn()) {
             $this->addError('column_name', 'You have already taken this column');
             return;
         }
@@ -377,11 +389,11 @@ class RestApi extends Component
             'column_validation' => $this->rules['column_validation'],
         ];
 
-        if ($this->isForeignKey) {
-            $rulesToValidate['foreignModelName'] = $this->rules['foreignModelName'];
-            $rulesToValidate['referencedColumn'] = $this->rules['local_key'];
-            $rulesToValidate['onDeleteAction'] = $this->rules['onDeleteAction'];
-            $rulesToValidate['onUpdateAction'] = $this->rules['onUpdateAction'];
+        if ($this->is_foreign_key) {
+            $rulesToValidate['foreign_model_name'] = $this->rules['foreign_model_name'];
+            $rulesToValidate['referenced_column'] = $this->rules['local_key'];
+            $rulesToValidate['on_delete_action'] = $this->rules['on_delete_action'];
+            $rulesToValidate['on_update_action'] = $this->rules['on_update_action'];
         }
 
         $this->validate($rulesToValidate);
@@ -391,11 +403,11 @@ class RestApi extends Component
             'data_type' => $this->data_type,
             'column_name' => $this->column_name,
             'column_validation' => $this->column_validation,
-            'isForeignKey' => $this->isForeignKey ?? false,
-            'foreignModelName' => $this->foreignModelName,
-            'referencedColumn' => $this->referencedColumn,
-            'onDeleteAction' => $this->onDeleteAction,
-            'onUpdateAction' => $this->onUpdateAction,
+            'is_foreign_key' => $this->is_foreign_key ?? false,
+            'foreign_model_name' => $this->foreign_model_name,
+            'referenced_column' => $this->referenced_column,
+            'on_delete_action' => $this->on_delete_action,
+            'on_update_action' => $this->on_update_action,
         ];
 
         // Update existing field or add new one
@@ -413,7 +425,7 @@ class RestApi extends Component
         $this->isAddFieldModalOpen = false;
         $this->isEditFieldModalOpen = false;
         $this->fieldId = null;
-        $this->reset(['column_name', 'data_type', 'column_validation', 'isForeignKey', 'foreignModelName', 'referencedColumn']);
+        $this->reset(['column_name', 'data_type', 'column_validation', 'is_foreign_key', 'foreign_model_name', 'referenced_column','on_delete_action', 'on_update_action']);
     }
 
     // Save notification data
@@ -444,19 +456,19 @@ class RestApi extends Component
     private function validateInputs(): bool
     {
         // Validate model name
-        $this->validate(['modelName' => $this->rules['modelName']]);
+        $this->validate(['model_name' => $this->rules['model_name']]);
 
         // Check if model exists and overwrite is not checked
-        $modelPath = app_path('Models/' . $this->modelName . '.php');
-        if (File::exists($modelPath) && !$this->overwriteFiles) {
-            $this->errorMessage = "Model {$this->modelName} already exists if you want to overwrite it check the 'Overwrite Files' option";
+        $modelPath = app_path('Models/' . $this->model_name . '.php');
+        if (File::exists($modelPath) && !$this->is_overwrite_files) {
+            $this->errorMessage = "Model {$this->model_name} already exists if you want to overwrite it check the 'Overwrite Files' option";
             session()->flash('error', $this->errorMessage);
             $this->dispatch('show-toast', ['message' => $this->errorMessage, 'type' => 'error']);
             return false;
         }
 
         // Check if notification file is selected but no notification data is provided
-        if ($this->notificationFile && empty($this->notificationData)) {
+        if ($this->is_notification_file_added && empty($this->notificationData)) {
             $this->errorMessage = "Please add notification data before generating files.";
             session()->flash('error', $this->errorMessage);
             $this->dispatch('show-toast', ['message' => $this->errorMessage, 'type' => 'error']);
@@ -492,86 +504,72 @@ class RestApi extends Component
         }
     }
 
+    protected function getSelectedTraits(): array
+    {
+        return array_filter([
+            'ApiResponser',
+            'BaseModel',
+            $this->is_boot_model_trait_added ? 'BootModel' : null,
+            $this->is_pagination_trait_added ? 'PaginationTrait' : null,
+            $this->is_resource_filterable_trait_added ? 'ResourceFilterable' : null,
+            $this->is_has_uuid_trait_added ? 'HasUuid' : null,
+            $this->is_has_user_action_trait_added ? 'HasUserAction' : null,
+        ]);
+    }
     // Generate all selected files
     private function generateFiles(): void
     {
-        $selectedTraits = array_filter([
-            'ApiResponser',
-            'BaseModel',
-            $this->BootModel ? 'BootModel' : null,
-            $this->PaginationTrait ? 'PaginationTrait' : null,
-            $this->ResourceFilterable ? 'ResourceFilterable' : null,
-            $this->HasUuid ? 'HasUuid' : null,
-            $this->HasUserAction ? 'HasUserAction' : null,
-        ]);
-
-        $modelName = $this->modelName;
-
+        $selectedTraits = $this->getSelectedTraits();
+        
         // Prepare selected methods
         $selectedMethods = array_filter([
-            $this->index ? 'index' : null,
-            $this->store ? 'store' : null,
-            $this->show ? 'show' : null,
-            $this->update ? 'update' : null,
-            $this->destroy ? 'destroy' : null,
+            $this->is_index_method_added ? 'index' : null,
+            $this->is_store_method_added ? 'store' : null,
+            $this->is_show_method_added ? 'show' : null,
+            $this->is_update_method_added ? 'update' : null,
+            $this->is_destroy_method_added ? 'destroy' : null,
         ]);
-
-        // Prepare files config for generation
-        $files = [
-            'model' => $this->modelFile,
-            'migration' => $this->migrationFile,
-            'softDelete' => $this->softDeleteFile,
-            'adminCRUDFile' => $this->crudFile,
-            'service' => $this->serviceFile,
-            'notification' => $this->notificationFile,
-            'resource' => $this->resourceFile,
-            'request' => $this->requestFile,
-            'traits' => $this->traitFiles,
-            'observer' => $this->observerFile,
-            'policy' => $this->policyFile,
-            'factory' => $this->factoryFile,
-        ];
 
         // Format field and relation strings
         $fieldString = collect($this->fieldsData)->pluck('column_name')->implode(', ');
 
         // Generate files based on flags
-        if ($files['model']) {
-            $this->generateModel($modelName, $fieldString, $this->relationData, $selectedMethods, $files['softDelete'], $files['factory'], $selectedTraits, $this->overwriteFiles);
+        if ($this->is_model_file_added) {
+            $this->generateModel($this->model_name, $fieldString, $this->relationData, $selectedMethods,  $this->is_soft_delete_added, $this->is_factory_file_added, $selectedTraits, $this->is_overwrite_files);
         }
 
-        if ($files['migration']) {
-            $this->generateMigration($modelName, $this->fieldsData, $files['softDelete'], $this->overwriteFiles);
+        if ($this->is_migration_file_added) {   
+            $this->generateMigration($this->model_name, $this->fieldsData, $this->is_soft_delete_added, $this->is_overwrite_files);
         }
 
-        $this->generateController($modelName, $selectedMethods, $files['service'], $files['resource'], $files['request'], $this->overwriteFiles, $files['adminCRUDFile']);
+        $this->generateController($this->model_name, $selectedMethods, $this->is_service_file_added, $this->is_resource_file_added, $this->is_request_file_added, $this->is_overwrite_files, $this->is_admin_crud_added);
 
-        if ($files['policy']) {
-            $this->generatePolicy($modelName, $this->overwriteFiles);
+        if ($this->is_policy_file_added) {
+            $this->generatePolicy($this->model_name, $this->is_overwrite_files);
         }
 
-        if ($files['observer']) {
-            $this->generateObserver($modelName, $this->overwriteFiles);
+        if ($this->is_observer_file_added) {
+            $this->generateObserver($this->model_name, $this->is_overwrite_files);
         }
 
-        if ($files['service']) {
-            $this->generateService($modelName, $this->overwriteFiles);
+        if ($this->is_service_file_added) {
+            $this->generateService($this->model_name, $this->is_overwrite_files);
         }
 
-        if ($files['notification']) {
-            $this->generateNotification($modelName, $this->overwriteFiles);
+        if ($this->is_notification_file_added) {
+            $this->generateNotification($this->model_name, $this->is_overwrite_files);
         }
 
-        if ($files['resource']) {
-            $this->generateResource($modelName, $this->overwriteFiles);
+        if ($this->is_resource_file_added) {
+            $this->generateResource($this->model_name, $this->is_overwrite_files);
         }
 
-        if ($files['request']) {
-            $this->generateRequest($modelName, $this->fieldsData, $this->overwriteFiles);
+        if ($this->is_request_file_added) {
+            $this->generateRequest($this->model_name, $this->fieldsData, $this->is_overwrite_files);
         }
 
-        if ($files['factory']) {
-            $this->generateFactory($modelName, $this->fieldsData, $this->overwriteFiles);
+        if ($this->is_factory_file_added) {
+            $this->generateFactory($this->model_name, $this->fieldsData, $this->is_overwrite_files);
         }
 
         if ($selectedTraits) {
@@ -586,7 +584,7 @@ class RestApi extends Component
     // Generate model file
     private function generateModel($modelName, $fieldString, $relations, $selectedMethods, $softDelete, $factory, $selectedTraits, $overwrite)
     {
-        Artisan::call('codegenerator:model', [
+        Artisan::call('code-generator:model', [
             'model' => $modelName,
             '--fields' => $fieldString,
             '--relations' => $relations,
@@ -601,7 +599,7 @@ class RestApi extends Component
     //Generate migration file
     private function generateMigration($modelName, $fields, $softDelete, $overwrite)
     {
-        Artisan::call('codegenerator:migration', [
+        Artisan::call('code-generator:migration', [
             'model' => $modelName,
             '--fields' => $fields,
             '--softdelete' => $softDelete,
@@ -612,7 +610,7 @@ class RestApi extends Component
     // Generate controller file
     private function generateController($modelName, $selectedMethods, $service, $resource, $request, $overwrite, $adminCrud)
     {
-        Artisan::call('codegenerator:controller', [
+        Artisan::call('code-generator:controller', [
             'model' => $modelName,
             '--methods' => implode(',', $selectedMethods),
             '--service' => $service,
@@ -626,7 +624,7 @@ class RestApi extends Component
     // Generate policy file
     private function generatePolicy($modelName, $overwrite)
     {
-        Artisan::call('codegenerator:policy', [
+        Artisan::call('code-generator:policy', [
             'model' => $modelName,
             '--overwrite' => $overwrite
         ]);
@@ -635,7 +633,7 @@ class RestApi extends Component
     // Generate observer file
     private function generateObserver($modelName, $overwrite)
     {
-        Artisan::call('codegenerator:observer', [
+        Artisan::call('code-generator:observer', [
             'model' => $modelName,
             '--overwrite' => $overwrite
         ]);
@@ -644,7 +642,7 @@ class RestApi extends Component
     // Generate service file
     private function generateService($modelName, $overwrite)
     {
-        Artisan::call('codegenerator:service', [
+        Artisan::call('code-generator:service', [
             'model' => $modelName,
             '--overwrite' => $overwrite
         ]);
@@ -655,7 +653,7 @@ class RestApi extends Component
     {
         $notificationData = !empty($this->notificationData) ? $this->notificationData[0] : [];
 
-        Artisan::call('codegenerator:notification', [
+        Artisan::call('code-generator:notification', [
             'className' => $notificationData['class_name'] ?? $modelName . 'Notification',
             '--model' => $modelName,
             '--data' => $notificationData['data'] ?? '',
@@ -668,7 +666,7 @@ class RestApi extends Component
     // Generate resource file
     private function generateResource($modelName, $overwrite)
     {
-        Artisan::call('codegenerator:resource', [
+        Artisan::call('code-generator:resource', [
             'model' => $modelName,
             '--overwrite' => $overwrite
         ]);
@@ -681,7 +679,7 @@ class RestApi extends Component
             return $field['column_name'] . ':' . $field['column_validation'];
         }, $fields));
 
-        Artisan::call('codegenerator:request', [
+        Artisan::call('code-generator:request', [
             'model' => $modelName,
             '--rules' => $ruleString,
             '--overwrite' => $overwrite
@@ -695,21 +693,20 @@ class RestApi extends Component
             return $field['column_name'] . ':' . $field['data_type'];
         }, $fields));
 
-        Artisan::call('codegenerator:factory', [
+        Artisan::call('code-generator:factory', [
             'model' => $modelName,
             '--fields' => $fieldString,
             '--overwrite' => $overwrite
         ]);
     }
 
-    //Copy traits to application
-    private function copyTraits($selectedTraits)
+
+    private  function copyTraits(array $selectedTraits): void
     {
-        $source = __DIR__ . '/../../TraitsLibrary/Traits';
-        $destination = app_path(config('code_generator.trait_path', 'Traits'));
+        $source = __DIR__ . '/../TraitsLibrary/Traits';
+        $destination = app_path(config('code-generator.paths.trait', 'Traits'));
 
         if (!File::exists($source)) {
-            Log::warning('Traits source folder not found: ' . $source);
             return;
         }
 
@@ -720,105 +717,47 @@ class RestApi extends Component
             $sourceFile = $source . DIRECTORY_SEPARATOR . $fileName;
             $destinationFile = $destination . DIRECTORY_SEPARATOR . $fileName;
 
+            // Skip if the source trait file does not exist
             if (!File::exists($sourceFile)) {
-                Log::warning("Trait file not found in source: $fileName");
                 continue;
             }
 
+            // Skip if the destination trait file already exists
             if (File::exists($destinationFile)) {
-                Log::info("Trait $fileName already exists in destination, skipping.");
                 continue;
             }
 
             File::copy($sourceFile, $destinationFile);
-            Log::info("Trait $fileName copied to app/Traits.");
         }
     }
-
-    //Load migration table names from the migrations directory
-    public function loadMigrationTableNames()
-    {
-        $migrationPath = database_path('migrations');
-        $files = File::exists($migrationPath) ? File::files($migrationPath) : [];
-
-        $this->tableNames = collect($files)->map(function ($file) {
-            if (preg_match('/create_(.*?)_table/', $file->getFilename(), $matches)) {
-                return $matches[1];
-            }
-            return null;
-        })->filter()->unique()->values()->toArray();
-    }
-
     // Update field names based on foreign model name
     public function updatedForeignModelName($value)
     {
-        if ($value && Schema::hasTable($value)) {
-            $this->fieldNames = Schema::getColumnListing($value);
-        } else {
-            $this->fieldNames = [];
+        if ($value) {
+            $this->fieldNames = Helper::getColumnNames($value);
         }
     }
 
-    // Add this method to load model names from migrations
-    private function loadModelNames()
-    {
-        $migrationPath = database_path('migrations');
-        if (File::exists($migrationPath)) {
-            $files = File::files($migrationPath);
-            $this->modelNames = collect($files)
-                ->map(function ($file) {
-                    // Extract table name from migration file
-                    if (preg_match('/create_(.*?)_table/', $file->getFilename(), $matches)) {
-                        $tableName = $matches[1];
-                        // Convert table name to model name (e.g., user_profiles -> UserProfile)
-                        return Str::studly(Str::singular($tableName));
-                    }
-                    return null;
-                })->filter()->unique()->values()->toArray();
-        }
-    }
-
-    // Add this method to load field names when related model changes
+    // loadw field names when related model changes
     public function updatedRelatedModel($value)
     {
         if ($value) {
-            // Convert model name to table name (plural, snake_case)
-            $tableName = Str::plural(Str::snake($value));
-
-            // Get column names from the database schema
-            if (Schema::hasTable($tableName)) {
-                $this->columnNames = Schema::getColumnListing($tableName);
-            } else {
-                $this->columnNames = [];
-            }
-        } else {
-            $this->columnNames = [];
+            $this->columnNames = Helper::getColumnNames('App\\' . config('code-generator.paths.model', 'Models') . '\\' . $value);
         }
     }
 
-    // Add this method to load intermediate fields when intermediate model changes
+    // loads intermediate fields when intermediate model changes
     public function updatedIntermediateModel($value)
     {
         if ($value) {
-            // Convert model name to table name (plural, snake_case)
-            $tableName = Str::plural(Str::snake($value));
-
-            // Get column names from the database schema
-            if (Schema::hasTable($tableName)) {
-                $this->intermediateFields = Schema::getColumnListing($tableName);
-            } else {
-                $this->intermediateFields = [];
-            }
-        } else {
-            $this->intermediateFields = [];
+            $this->intermediateFields = Helper::getColumnNames('App\\' . config('code-generator.paths.model', 'Models') . '\\' . $value);
         }
     }
 
-    // Add this method to handle relation type changes
     public function updatedRelationType($value)
     {
         // If the relation type is not a "through" relation, clear intermediate fields
-        if (!in_array($value, ['Has One Through', 'Has Many Through'])) {
+        if (!in_array($value, ['hasOneThrough', 'hasManyThrough'])) {
             $this->intermediate_model = '';
             $this->intermediate_foreign_key = '';
             $this->intermediate_local_key = '';

@@ -1,13 +1,13 @@
 <?php
 
-namespace DhavalRajput\CodeGenerator;
+namespace Sevenspan\CodeGenerator;
 
 use Livewire\Livewire;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use DhavalRajput\CodeGenerator\Http\Livewire\Index;
-use DhavalRajput\CodeGenerator\Http\Livewire\Logs;
-use DhavalRajput\CodeGenerator\Http\Livewire\RestApi;
+use Sevenspan\CodeGenerator\Http\Livewire\Logs;
+use Sevenspan\CodeGenerator\Http\Livewire\Index;
+use Sevenspan\CodeGenerator\Http\Livewire\RestApi;
 
 class CodeGeneratorServiceProvider extends ServiceProvider
 {
@@ -20,35 +20,33 @@ class CodeGeneratorServiceProvider extends ServiceProvider
     {
         // Merge package config with app config
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/code_generator.php',
-            'code_generator'
+            __DIR__ . '/../config/code-generator.php',
+            'code-generator'
         );
 
         // Register package artisan commands
         $this->commands([
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeModel::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeController::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeMigration::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakePolicy::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeObserver::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeFactory::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeService::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeNotification::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeRequest::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeResource::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\MakeResourceCollection::class,
-            \DhavalRajput\CodeGenerator\Console\Commands\ClearLogs::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeModel::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeController::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeMigration::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakePolicy::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeObserver::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeFactory::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeService::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeNotification::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeRequest::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeResource::class,
+            \Sevenspan\CodeGenerator\Console\Commands\MakeResourceCollection::class,
+            \Sevenspan\CodeGenerator\Console\Commands\ClearLogs::class,
         ]);
     }
 
 
     public function boot(): void
     {
-        // Define middleware group for the code generator routes
-        Route::middlewareGroup(
-            'codeGeneratorMiddleware',
-            config('code_generator.middleware', [])
-        );
+        if (!app()->environment(['local'])) {
+            return;
+        }
 
         // Publish views from package
         $this->publishes([
@@ -57,21 +55,22 @@ class CodeGeneratorServiceProvider extends ServiceProvider
 
         // Publish config file
         $this->publishes([
-            __DIR__ . '/../config/code_generator.php' => config_path('code_generator.php'),
-        ], 'config');
+            __DIR__ . '/../config/code-generator.php' => config_path('code-generator.php'),
+        ], 'code-generator-config');
 
         // Publish migration files
         $this->publishes([
             __DIR__ . '/Migrations' => database_path('migrations'),
-        ], 'codegenerator-migrations');
+        ], 'code-generator-migrations');
 
         // Publish stub files
         $this->publishes([
             __DIR__ . '/stubs' => database_path('stubs'),
-        ], 'stubs');
+        ], 'code-generator-stubs');
 
         // Load routes from package
-        $this->loadRoutesFrom(__DIR__ . "/../routes/web.php");
+        Route::middleware('web')
+            ->group(__DIR__ . '/../routes/web.php');
 
         // Load migrations from package
         $this->loadMigrationsFrom(__DIR__ . '/Migrations');

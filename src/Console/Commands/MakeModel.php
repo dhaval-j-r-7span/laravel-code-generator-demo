@@ -1,12 +1,12 @@
 <?php
 
-namespace DhavalRajput\CodeGenerator\Console\Commands;
+namespace Sevenspan\CodeGenerator\Console\Commands;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use DhavalRajput\CodeGenerator\Traits\FileManager;
-use DhavalRajput\CodeGenerator\Enums\CodeGeneratorFileType;
+use Sevenspan\CodeGenerator\Traits\FileManager;
+use Sevenspan\CodeGenerator\Enums\CodeGeneratorFileType;
 
 class MakeModel extends Command
 {
@@ -14,7 +14,7 @@ class MakeModel extends Command
 
     private const INDENT = '    ';
 
-    protected $signature = 'codegenerator:model {model : The name of the model} 
+    protected $signature = 'code-generator:model {model : The name of the model} 
                                                 {--fields= : Comma-separated fields (e.g., name,age)} 
                                                 {--relations=* : Model relationships with their foreign key and local key (e.g., Post:hasMany:user_id:id,User:belongsTo:post_id:id)} 
                                                 {--methods= : Comma-separated list of controller methods to generate api routes (e.g., index,show,store,update,destroy)}
@@ -33,7 +33,7 @@ class MakeModel extends Command
     public function handle(): void
     {
         $modelClass = Str::studly($this->argument('model'));
-        $modelFilePath = app_path(config('code_generator.model_path', 'Models') . "/{$modelClass}.php");
+        $modelFilePath = app_path(config('code-generator.paths.model', 'Models') . "/{$modelClass}.php");
 
         $this->createDirectoryIfMissing(dirname($modelFilePath));
         $content = $this->getReplacedContent($modelClass);
@@ -81,7 +81,7 @@ class MakeModel extends Command
         $relatedModelImports = $this->getRelatedModels();
 
         return [
-            'namespace' => 'App\\' . config('code_generator.model_path', 'Models'),
+            'namespace' => 'App\\' . config('code-generator.paths.model', 'Models'),
             'class' => $modelClass,
             'traitNamespaces' => $traitInfo['uses'],
             'traits' => $traitInfo['apply'],
@@ -114,6 +114,8 @@ class MakeModel extends Command
             $fillableFields = implode(",\n        ", $fieldNames);
         }
         return $fillableFields;
+
+        return $fillableFields;
     }
 
     /**
@@ -144,7 +146,7 @@ class MakeModel extends Command
         if ($customTraits) {
             foreach (explode(',', $customTraits) as $trait) {
                 $trait = trim($trait);
-                $traitUseStatements[] = 'use App\\' . config('code_generator.trait_path', 'Traits') . "\\$trait;";
+                $traitUseStatements[] = 'use App\\' . config('code-generator.paths.trait', 'Traits') . "\\$trait;";
                 $traitNames[] = $trait;
             }
         }
@@ -165,23 +167,11 @@ class MakeModel extends Command
             return '';
         }
 
-        $relationMap = [
-            'One to One' => 'hasOne',
-            'One to Many' => 'hasMany',
-            'Many to One' => 'belongsTo',
-            'Many to Many' => 'belongsToMany',
-            'Has One Through' => 'hasOneThrough',
-            'Has Many Through' => 'hasManyThrough',
-            'One To One (Polymorphic)' => 'morphOne',
-            'One To Many (Polymorphic)' => 'morphMany',
-            'Many To Many (Polymorphic)' => 'morphToMany',
-        ];
-
         $methods = [];
 
         foreach ($relations as $relation) {
             $methodName = Str::camel(Str::plural($relation['related_model']));
-            $relationType = $relationMap[$relation['relation_type']];
+            $relationType = $relation['relation_type'];
 
             $method = self::INDENT . 'public function ' . $methodName . '()' . PHP_EOL . self::INDENT . '{' . PHP_EOL . self::INDENT . self::INDENT . 'return $this->' . $relationType . '(';
 

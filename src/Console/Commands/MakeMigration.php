@@ -1,12 +1,12 @@
 <?php
 
-namespace DhavalRajput\CodeGenerator\Console\Commands;
+namespace Sevenspan\CodeGenerator\Console\Commands;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use DhavalRajput\CodeGenerator\Traits\FileManager;
-use DhavalRajput\CodeGenerator\Enums\CodeGeneratorFileType;
+use Sevenspan\CodeGenerator\Traits\FileManager;
+use Sevenspan\CodeGenerator\Enums\CodeGeneratorFileType;
 
 class MakeMigration extends Command
 {
@@ -14,7 +14,7 @@ class MakeMigration extends Command
 
     private const INDENT = '    ';
 
-    protected $signature = 'codegenerator:migration {model : The name of the migration} 
+    protected $signature = 'code-generator:migration {model : The name of the migration} 
                                                     {--fields=* : Array of field definitions with options like column_name, data_type, isForeignKey, foreignModelName, referencedColumn, onDeleteAction, onUpdateAction} 
                                                     {--softdelete : Include soft delete} 
                                                     {--overwrite : Overwrite the file if it exists}';
@@ -28,12 +28,12 @@ class MakeMigration extends Command
 
     public function handle()
     {
-        $tableName = Str::snake($this->argument('model'));
+        $tableName = Str::plural(Str::snake($this->argument('model')));
         $timestamp = now()->format('Y_m_d_His');
 
         // Define the migration file name and path
         $migrationFileName = "{$timestamp}_create_{$tableName}_table.php";
-        $migrationFilePath = base_path("database/" . config('code_generator.migration_path', 'Migration') . "/{$migrationFileName}");
+        $migrationFilePath = base_path("database/" . config('code-generator.paths.migration', 'Migration') . "/{$migrationFileName}");
 
         $this->createDirectoryIfMissing(dirname($migrationFilePath));
 

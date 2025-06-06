@@ -1,19 +1,19 @@
 <?php
 
-namespace DhavalRajput\CodeGenerator\Console\Commands;
+namespace Sevenspan\CodeGenerator\Console\Commands;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use DhavalRajput\CodeGenerator\Traits\FileManager;
-use DhavalRajput\CodeGenerator\Enums\CodeGeneratorFileType;
+use Sevenspan\CodeGenerator\Traits\FileManager;
+use Sevenspan\CodeGenerator\Enums\CodeGeneratorFileType;
 
 
 class MakeObserver extends Command
 {
     use FileManager;
 
-    protected $signature = 'codegenerator:observer {model : The related model for the observer.}
+    protected $signature = 'code-generator:observer {model : The related model for the observer.}
                                                    {--overwrite}';
 
     protected $description = 'Generate an observer class for a specified model.';
@@ -28,7 +28,7 @@ class MakeObserver extends Command
         $observerClass = Str::studly($this->argument('model'));
 
         // Define the path for the observer file
-        $observerFilePath = app_path(config('code_generator.observer_path', 'Notification') . "/{$observerClass}.php");
+        $observerFilePath = app_path(config('code-generator.paths.observer', 'Notification') . "/{$observerClass}.php");
 
         $this->createDirectoryIfMissing(dirname($observerFilePath));
 
@@ -60,10 +60,10 @@ class MakeObserver extends Command
     {
         $relatedModel = $this->argument('model');
         return [
-            'namespace'              => 'App\\' . config('code_generator.observer_path', 'Observers'),
+            'namespace'              => 'App\\' . config('code-generator.paths.observer', 'Observers'),
             'class'                  => $observerClass,
             'model'                  => $relatedModel,
-            'relatedModelNamespace'  => config('code_generator.model_path', 'Models') . '\\' . Str::studly($relatedModel),
+            'relatedModelNamespace'  => config('code-generator.paths.model', 'Models') . '\\' . Str::studly($relatedModel),
             'modelInstance'          => Str::camel($relatedModel),
         ];
     }
