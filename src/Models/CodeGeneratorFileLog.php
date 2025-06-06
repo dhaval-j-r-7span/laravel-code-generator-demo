@@ -1,9 +1,9 @@
 <?php
 
-namespace Sevenspan\CodeGenerator\Models;
+namespace DhavalRajput\CodeGenerator\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Sevenspan\CodeGenerator\Enums\CodeGeneratorFileLogStatus;
+use DhavalRajput\CodeGenerator\Enums\CodeGeneratorFileLogStatus;
 
 class CodeGeneratorFileLog extends Model
 {

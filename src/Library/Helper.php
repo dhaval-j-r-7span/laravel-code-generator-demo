@@ -1,6 +1,6 @@
 <?php
 
-namespace Sevenspan\CodeGenerator\Library;
+namespace DhavalRajput\CodeGenerator\Library;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;

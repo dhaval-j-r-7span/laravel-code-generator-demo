@@ -1,13 +1,13 @@
 <?php
 
-namespace Sevenspan\CodeGenerator\Http\Livewire;
+namespace DhavalRajput\CodeGenerator\Http\Livewire;
 
 
 use Livewire\Component;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-use Sevenspan\CodeGenerator\Library\Helper;
+use DhavalRajput\CodeGenerator\Library\Helper;
 
 class RestApi extends Component
 {

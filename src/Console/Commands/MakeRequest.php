@@ -1,12 +1,12 @@
 <?php
 
-namespace Sevenspan\CodeGenerator\Console\Commands;
+namespace DhavalRajput\CodeGenerator\Console\Commands;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Sevenspan\CodeGenerator\Traits\FileManager;
-use Sevenspan\CodeGenerator\Enums\CodeGeneratorFileType;
+use DhavalRajput\CodeGenerator\Traits\FileManager;
+use DhavalRajput\CodeGenerator\Enums\CodeGeneratorFileType;
 
 class MakeRequest extends Command
 {

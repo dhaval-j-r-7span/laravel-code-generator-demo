@@ -1,11 +1,11 @@
 <?php
 
-namespace Sevenspan\CodeGenerator\Traits;
+namespace DhavalRajput\CodeGenerator\Traits;
 
 use Illuminate\Support\Facades\File;
-use Sevenspan\CodeGenerator\Enums\CodeGeneratorFileType;
-use Sevenspan\CodeGenerator\Models\CodeGeneratorFileLog;
-use Sevenspan\CodeGenerator\Enums\CodeGeneratorFileLogStatus;
+use DhavalRajput\CodeGenerator\Enums\CodeGeneratorFileType;
+use DhavalRajput\CodeGenerator\Models\CodeGeneratorFileLog;
+use DhavalRajput\CodeGenerator\Enums\CodeGeneratorFileLogStatus;
 
 /**
  * Trait FileManager

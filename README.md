@@ -32,7 +32,7 @@ This package is designed to **accelerate API development** in Laravel by providi
 1. **Install via Composer:**
 
     ```bash
-    composer require sevenspan/code-generator
+    composer require dhavalrajput/code-generator
     ```
 
 2. **Publish the configuration and migrations:**
